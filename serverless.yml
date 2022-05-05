@@ -1,0 +1,43 @@
+service: llama-apy-prediction
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: eu-central-1
+  tracing:
+    apiGateway: true
+    lambda: true
+  # needs to be >=256, otherwise blas error on joblib.load
+  memorySize: 512
+  iam:
+    role:
+      statements:
+        # for reading the joblib object
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+            - s3:*Object*
+          Resource: "*"
+
+functions:
+  getPredictions:
+    handler: src/getPredictions.handler
+    description: Lambda for calling trained random forest model
+    timeout: 20
+    events:
+      - httpApi:
+          method: post
+          path: /predictions
+    layers:
+      # adding this manually cause lamba layer deployment via manual process
+      - arn:aws:lambda:eu-central-1:856461987125:layer:sklearn:1
+
+package:
+  patterns:
+    # first exclude everything
+    - "!*/**"
+    # then add just the handler func
+    - src/getPredictions.py

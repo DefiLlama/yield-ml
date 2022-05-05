@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__
+.ipynb_checkpoints/
+*zip
+*joblib
+dataEnriched.json
+*csv
+.serverless
+*html
+node_modules
