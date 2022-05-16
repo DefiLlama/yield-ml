@@ -44,6 +44,13 @@ where apyFuture can be multiple things, a few which come to mind:
 
 - use baseline, logistic regression and random forest oob with minimal settings, don't waste much time on tuning until we happy
 
+- you can find the datasets used for training here:
+
+```
+https://defillama-datasets.s3.eu-central-1.amazonaws.com/yield-ml/dataEnriched.json
+https://defillama-datasets.s3.eu-central-1.amazonaws.com/yield-ml/pools.csv
+```
+
 ### notes regarding lambda layer/serverless
 
 includes a simple lambda handler function for ML inference.
