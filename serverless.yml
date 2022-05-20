@@ -21,6 +21,12 @@ provider:
             - s3:ListBucket
             - s3:*Object*
           Resource: "*"
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+            - ssm:DescribeParameters
+            - kms:Decrypt
+          Resource: "*"
 
 functions:
   getPredictions:
