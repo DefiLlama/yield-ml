@@ -33,7 +33,17 @@ functions:
           path: /predictions
     layers:
       # adding this manually cause lamba layer deployment via manual process
-      - arn:aws:lambda:eu-central-1:856461987125:layer:sklearn:1
+      - arn:aws:lambda:eu-central-1:856461987125:layer:yield-ml-2022-05-20:1
+
+  checkFeatureDrift:
+    handler: src/checkFeatureDrift.handler
+    description: Lambda for checking for potential feature drift btw reference and current data
+    timeout: 30
+    layers:
+      - arn:aws:lambda:eu-central-1:856461987125:layer:yield-ml-2022-05-20:1
+    events:
+      # every hour at 30 past
+      - schedule: cron(30 * * * ? *)
 
 package:
   patterns:
@@ -41,3 +51,4 @@ package:
     - "!*/**"
     # then add just the handler func
     - src/getPredictions.py
+    - src/checkFeatureDrift.py

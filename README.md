@@ -72,7 +72,7 @@ python runtime lambdas are a bit of a pain when using scientific computing libra
 hence i chose the following process instead:
 
 - building a lambda layer with all required dependencies using the `createlayer.sh` script
-- uploading the created zip file to s3
+- uploading the created zip file to s3 (`aws s3 cp layer.zip bucket`)
 - creating a layer manually via aws console
 - adding that layer to the handler function inside serverless.yml
 - and only then calling `sls deploy`
@@ -84,5 +84,3 @@ Layer consits of sklearn only (which will install numpy, scipy, joblib and threa
 ```
 [ERROR] Runtime.ImportModuleError: Unable to import module 'handler': /opt/python/lib/python3.8/site-packages/scipy/linalg/_fblas.cpython-38-x86_64-linux-gnu.so: ELF load command address/offset not properly aligned
 ```
-
-upload layer via `aws s3 cp layer.zip bucket`
