@@ -16,7 +16,7 @@ def handler(event, context):
     X_reference, X_current, features = read_datasets(
         bucket_reference="llama-apy-prediction-prod",
         bucket_current="llama-apy-prod-data",
-        prefix_reference="mlmodelartefacts/reference_data.json",
+        prefix_reference="mlmodelartefacts/reference_data_2022_05_20.json",
         prefix_current="enriched/dataEnriched.json",
         prefix_features="mlmodelartefacts/feature_list.joblib",
     )
@@ -40,7 +40,7 @@ def handler(event, context):
         # format the stats for discord
         stats_table = tabulate(stats, headers="keys", showindex=True, tablefmt="github")
         print(stats_table)
-        msg_string = f"Feature Drift Detected`​`​`​\n{stats_table}\n`​`​`​"
+        msg_string = f"Feature Drift Detected\n{stats_table}\n"
 
         # send msg
         webhook = DiscordWebhook(url=url["Parameter"]["Value"], content=msg_string)
@@ -88,6 +88,22 @@ def read_datasets(
     f = lambda data: np.array([[i[1] for i in x] for x in data])
     X_current = f(data_current)
     X_reference = f(data_reference)
+
+    # remove outliers on current data (even a small amount of large outliers in small pools would cause
+    # the tests to fail which results in lots of false positives for data drift check)
+    print("max values btw reference and current")
+    for f in ["apy", "apyMeanExpanding", "apyStdExpanding"]:
+        f_idx = features.index(f)
+        f_reference_max = X_reference[:, f_idx].max()
+        print(
+            f"""
+            feature: {f} 
+            {X_current[:, f_idx].max()} [current data] 
+            {f_reference_max} [reference data]
+            {sum(X_current[:, f_idx] >= f_reference_max)} [nb above max]
+            """
+        )
+        X_current = X_current[X_current[:, f_idx] < f_reference_max, :]
 
     return X_reference, X_current, features
 
