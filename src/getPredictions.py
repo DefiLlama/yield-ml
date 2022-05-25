@@ -32,7 +32,7 @@ def read_artefacts(
 artefacts = read_artefacts(
     bucket="llama-apy-prediction-prod",
     prefix="mlmodelartefacts",
-    files=["clf.joblib", "feature_list.joblib"],
+    files=["clf_2022_05_20.joblib", "feature_list.joblib"],
 )
 clf = artefacts["clf"]
 feature_list = artefacts["feature_list"]
