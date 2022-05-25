@@ -40,7 +40,7 @@ def handler(event, context):
         # format the stats for discord
         stats_table = tabulate(stats, headers="keys", showindex=True, tablefmt="github")
         print(stats_table)
-        msg_string = f"Feature Drift Detected\n{stats_table}\n"
+        msg_string = f"Feature Drift Detected`​`​`​\n{stats_table}\n`​`​`​"
 
         # send msg
         webhook = DiscordWebhook(url=url["Parameter"]["Value"], content=msg_string)
