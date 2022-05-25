@@ -11,7 +11,7 @@ provider:
     apiGateway: true
     lambda: true
   # needs to be >=256, otherwise blas error on joblib.load
-  memorySize: 512
+  memorySize: 1024
   iam:
     role:
       statements:

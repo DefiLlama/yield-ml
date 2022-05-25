@@ -29,13 +29,16 @@ def read_artefacts(
 
 
 # call this once outside the handler to cache the trained instance
+id_clf = "clf_2022_05_20"
+id_feature_list = "feature_list"
 artefacts = read_artefacts(
     bucket="llama-apy-prediction-prod",
     prefix="mlmodelartefacts",
-    files=["clf_2022_05_20.joblib", "feature_list.joblib"],
+    files=[f"{id_clf}.joblib", f"{id_feature_list}.joblib"],
 )
-clf = artefacts["clf"]
-feature_list = artefacts["feature_list"]
+print(artefacts)
+clf = artefacts[id_clf]
+feature_list = artefacts[id_feature_list]
 
 
 def handler(event, context) -> np.array:
