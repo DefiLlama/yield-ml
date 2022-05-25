@@ -3,10 +3,12 @@ __pycache__
 .ipynb_checkpoints/
 *zip
 *joblib
-dataEnriched.json
 *csv
 .serverless
 *html
 node_modules
 reference_data.json
 model_monitoring.ipynb
+checking_drift.ipynb
+*artefacts
+*data
