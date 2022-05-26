@@ -28,6 +28,9 @@ def handler(event, context):
         X_reference[:, -2:], X_current[:, -2:], features[-2:], 0.1
     )
     stats = num + cat
+    # format the stats for discord
+    stats_table = tabulate(stats, headers="keys", showindex=True, tablefmt="github")
+    print(f"\ntest results:\n{stats_table}\n")
 
     # send discord alarm if >= 1 feature drift
     if len([i for i in stats if i["drift"] == True]) > 0:
@@ -36,10 +39,6 @@ def handler(event, context):
             "/llama-apy/serverless/sls-authenticate/yield-ml-discord-webhook"
         )
         url = ssm.get_parameter(Name=ssm_path_webhook, WithDecryption=True)
-
-        # format the stats for discord
-        stats_table = tabulate(stats, headers="keys", showindex=True, tablefmt="github")
-        print(stats_table)
         msg_string = f"Feature Drift Detected`​`​`​\n{stats_table}\n`​`​`​"
 
         # send msg
@@ -89,9 +88,14 @@ def read_datasets(
     X_current = f(data_current)
     X_reference = f(data_reference)
 
+    # replace potential None values with -1 (should only occur in the categorical features)
+    # and only in X_reference, but will do it for X_current as well just in case
+    X_current[X_current == None] = -1
+    X_reference[X_reference == None] = -1
+
     # remove outliers on current data (even a small amount of large outliers in small pools would cause
     # the tests to fail which results in lots of false positives for data drift check)
-    print("max values btw reference and current")
+    print("max values btw reference and current:")
     for f in ["apy", "apyMeanExpanding", "apyStdExpanding"]:
         f_idx = features.index(f)
         f_reference_max = X_reference[:, f_idx].max()
@@ -139,6 +143,19 @@ def calculate_jensenhannon_distance(
     features: List[str],
     thr: float,
 ) -> List[dict]:
+
+    # projects and chains which haven't been seen by the algorithm during model training
+    # will be encoded as -1 before inputting to the model. For the drift check of these 2
+    # categorical features i will remove all samples with -1 in both `chain_factorized`
+    # and `project_factorized` so that the drift check doesn't throw a false alarm
+    # note: i deliberately apply this filter only inside this function because i want to catch
+    # feature drifts in numerical features in case its driven by a new chain/project
+    exclude = -1
+    print("remove -1 values from categorical features:")
+    for i, f in enumerate(features):
+        print(f"\tNb {f} == -1: {sum(X_current[:, i] == -1)}")
+        X_current = X_current[X_current[:, i].astype(int) != exclude, :]
+        X_reference = X_reference[X_reference[:, i].astype(int) != exclude, :]
 
     d = []
     for i, f in enumerate(features):
