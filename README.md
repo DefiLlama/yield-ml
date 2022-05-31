@@ -49,6 +49,10 @@ where apyFuture can be multiple things, a few which come to mind:
 ```
 https://defillama-datasets.s3.eu-central-1.amazonaws.com/yield-ml/dataEnriched.json
 https://defillama-datasets.s3.eu-central-1.amazonaws.com/yield-ml/pools.csv
+
+EDIT: datasets used for retraining the model on the latest available data:
+https://defillama-datasets.s3.eu-central-1.amazonaws.com/yield-ml/dataEnriched_2022_05_20.json
+https://defillama-datasets.s3.eu-central-1.amazonaws.com/yield-ml/pools_2022_05_20.csv (>1gb)
 ```
 
 ### notes regarding lambda layer/serverless
